@@ -10,7 +10,7 @@ import cv2 as cv
 import numpy as np
 import json
  
- 
+classes = ["aa","bb"]
 def convert(id, size, box):
  
     dw = 1.0/size[0]
@@ -62,11 +62,15 @@ def convert_annotation(image_name, xml_name, txt_save_name, img_save_name):
 
         b_w = bbox[i].get('width')
         b_h = bbox[i].get('height')
+        label_class = bbox[i].get('attribute')
 
         b_x = bbox[i].get('x')
         b_y = bbox[i].get('y')
-
-        bb = [0, (b_x+0.5*b_w)/img_w  ,(b_y+ 0.5*b_h)/img_h ,b_w/img_w ,b_h/img_h]
+        if label_class in classes:
+            class_index = classes.index(label_class)
+        else:
+            return
+        bb = [class_index, (b_x+0.5*b_w)/img_w  ,(b_y+ 0.5*b_h)/img_h ,b_w/img_w ,b_h/img_h]
         write_line_value(fw, bb)
     fw.close()
 def get_txt_value(name):
@@ -90,11 +94,11 @@ def mk_dir(dir):
         os.makedirs(dir)
 
 def parse_coco():
-    root = '/mnt/d/yolov5/lack/crop_real'
+    root = 'E:\code\RoadSignalDataSet'
 
     # 读取json并解析
-    json_path = os.path.join(root, 'label')
-    img_path  = os.path.join(root, 'image')
+    json_path = os.path.join(root, 'labels')
+    img_path  = os.path.join(root, 'images')
 
     save_img_path   = os.path.join(root, 'result_glass/images')
     save_label_path = os.path.join(root, 'result_glass/labels')
